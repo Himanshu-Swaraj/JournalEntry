@@ -2,6 +2,8 @@ package com.HS.journal.controller;
 
 import com.HS.journal.entity.JournalEntry;
 import com.HS.journal.service.JournalEntryService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.bson.types.ObjectId;
@@ -32,9 +34,14 @@ public class JournalEntryControllerV2 {
         return  true;
     }
     @GetMapping("/get_by_id/{myId}")
-    public JournalEntry getById(@PathVariable ObjectId myId){
-        return journalEntryService.findById(myId).orElse(null);
+    public ResponseEntity<JournalEntry> getById(@PathVariable ObjectId myId) {
+        return journalEntryService.findById(myId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
+
+
+
     @PutMapping("/update/{myId}")
     public JournalEntry updateEntry(@PathVariable ObjectId myId ,@RequestBody JournalEntry newEntry){
         JournalEntry old = journalEntryService.findById(myId).orElse(null);
